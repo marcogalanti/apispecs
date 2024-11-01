@@ -1,0 +1,57 @@
+openapi: 3.0.0
+info:
+  title: Contract API
+  description: API for managing contracts.
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/contract
+paths:
+  /contracts:
+    post:
+      summary: Create a new contract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerId:
+                  type: string
+                terms:
+                  type: string
+              required:
+                - customerId
+                - terms
+      responses:
+        '201':
+          description: Contract created
+        '400':
+          description: Invalid input
+  /contracts/{contractId}:
+    get:
+      summary: Get contract details
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contract details
+        '404':
+          description: Contract not found
+    delete:
+      summary: Terminate a contract
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Contract terminated
+        '404':
+          description: Contract not found
