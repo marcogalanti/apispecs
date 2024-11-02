@@ -1,108 +1,90 @@
-#%RAML 1.0
-title: Contract API
-version: v1
-baseUri: https://api.example.com/v1
-mediaType: application/json
+openapi: 3.0.0
+info:
+  title: Contract API
+  version: v1
+  description: API for managing contracts, with CRUD operations.
+servers:
+  - url: https://mp1a72cf35f032a465f3.free.beeceptor.com/api/v1
 
-types:
-  Contract:
-    type: object
-    properties:
-      id: integer
-      title: string
-      startDate: date
-      endDate: date
-      status: string
-      parties:
-        type: array
-        items: string
-      amount: number
-    example:
-      id: 1
-      title: "Service Agreement"
-      startDate: "2024-01-01"
-      endDate: "2024-12-31"
-      status: "active"
-      parties: ["Company A", "Company B"]
-      amount: 50000
+paths:
+  /contracts:
+    get:
+      summary: Retrieve a list of all contracts
+      responses:
+        '200':
+          description: A list of contracts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contract'
+              example:
+                - id: 1
+                  title: "Service Agreement"
+                  startDate: "2024-01-01"
+                  endDate: "2024-12-31"
+                  status: "active"
+                  parties: ["Company A", "Company B"]
+                  amount: 50000
+                - id: 2
+                  title: "Supply Agreement"
+                  startDate: "2024-02-01"
+                  endDate: "2024-12-31"
+                  status: "terminated"
+                  parties: ["Supplier A", "Retailer B"]
+                  amount: 100000
 
-  ErrorResponse:
-    type: object
-    properties:
-      error: string
-      message: string
-    example:
-      error: "Not Found"
-      message: "Contract not found."
-
-/contracts:
-  get:
-    description: Retrieve a list of all contracts
-    responses:
-      200:
-        body:
+    post:
+      summary: Create a new contract
+      requestBody:
+        description: Contract to create
+        required: true
+        content:
           application/json:
-            type: Contract[]
-            example: [
-              {
-                "id": 1,
-                "title": "Service Agreement",
-                "startDate": "2024-01-01",
-                "endDate": "2024-12-31",
-                "status": "active",
-                "parties": ["Company A", "Company B"],
-                "amount": 50000
-              },
-              {
-                "id": 2,
-                "title": "Supply Agreement",
-                "startDate": "2024-02-01",
-                "endDate": "2024-12-31",
-                "status": "terminated",
-                "parties": ["Supplier A", "Retailer B"],
-                "amount": 100000
-              }
-            ]
-
-  post:
-    description: Create a new contract
-    body:
-      application/json:
-        type: Contract
-        example:
-          title: "New Service Contract"
-          startDate: "2024-06-01"
-          endDate: "2025-06-01"
-          status: "active"
-          parties: ["Company X", "Company Y"]
-          amount: 75000
-    responses:
-      201:
-        description: Contract created successfully
-        body:
-          application/json:
-            type: Contract
+            schema:
+              $ref: '#/components/schemas/Contract'
             example:
-              id: 3
               title: "New Service Contract"
               startDate: "2024-06-01"
               endDate: "2025-06-01"
               status: "active"
               parties: ["Company X", "Company Y"]
               amount: 75000
-
-  /{contractId}:
-    uriParameters:
-      contractId:
-        type: integer
-        description: Unique identifier of the contract
-    get:
-      description: Retrieve a specific contract by ID
       responses:
-        200:
-          body:
+        '201':
+          description: Contract created successfully
+          content:
             application/json:
-              type: Contract
+              schema:
+                $ref: '#/components/schemas/Contract'
+              example:
+                id: 3
+                title: "New Service Contract"
+                startDate: "2024-06-01"
+                endDate: "2025-06-01"
+                status: "active"
+                parties: ["Company X", "Company Y"]
+                amount: 75000
+
+  /contracts/{contractId}:
+    parameters:
+      - name: contractId
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier of the contract
+
+    get:
+      summary: Retrieve a specific contract by ID
+      responses:
+        '200':
+          description: Contract details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
               example:
                 id: 1
                 title: "Service Agreement"
@@ -111,33 +93,39 @@ types:
                 status: "active"
                 parties: ["Company A", "Company B"]
                 amount: 50000
-        404:
+        '404':
           description: Contract not found
-          body:
+          content:
             application/json:
-              type: ErrorResponse
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 error: "Not Found"
                 message: "Contract with ID 1 not found."
 
     put:
-      description: Update an existing contract
-      body:
-        application/json:
-          type: Contract
-          example:
-            title: "Updated Service Contract"
-            startDate: "2024-06-01"
-            endDate: "2025-06-01"
-            status: "active"
-            parties: ["Company X", "Company Y"]
-            amount: 80000
+      summary: Update an existing contract
+      requestBody:
+        description: Updated contract data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contract'
+            example:
+              title: "Updated Service Contract"
+              startDate: "2024-06-01"
+              endDate: "2025-06-01"
+              status: "active"
+              parties: ["Company X", "Company Y"]
+              amount: 80000
       responses:
-        200:
+        '200':
           description: Contract updated successfully
-          body:
+          content:
             application/json:
-              type: Contract
+              schema:
+                $ref: '#/components/schemas/Contract'
               example:
                 id: 1
                 title: "Updated Service Contract"
@@ -146,25 +134,68 @@ types:
                 status: "active"
                 parties: ["Company X", "Company Y"]
                 amount: 80000
-        404:
+        '404':
           description: Contract not found
-          body:
+          content:
             application/json:
-              type: ErrorResponse
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 error: "Not Found"
                 message: "Contract with ID 1 not found."
 
     delete:
-      description: Delete a specific contract by ID
+      summary: Delete a specific contract by ID
       responses:
-        204:
+        '204':
           description: Contract deleted successfully
-        404:
+        '404':
           description: Contract not found
-          body:
+          content:
             application/json:
-              type: ErrorResponse
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 error: "Not Found"
                 message: "Contract with ID 1 not found."
+
+components:
+  schemas:
+    Contract:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Service Agreement"
+        startDate:
+          type: string
+          format: date
+          example: "2024-01-01"
+        endDate:
+          type: string
+          format: date
+          example: "2024-12-31"
+        status:
+          type: string
+          example: "active"
+        parties:
+          type: array
+          items:
+            type: string
+          example: ["Company A", "Company B"]
+        amount:
+          type: number
+          example: 50000
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Contract not found."
