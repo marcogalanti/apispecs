@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Contract API
-  version: v1
+  version: 1.0.6
   description: API for managing contracts, with CRUD operations.
 servers:
   - url: https://mp1a72cf35f032a465f3.free.beeceptor.com/api/v1
@@ -20,14 +20,14 @@ paths:
                 items:
                   $ref: '#/components/schemas/Contract'
               example:
-                - id: 1
+                - id: e27a21b95804e50a7099
                   title: "Service Agreement"
                   startDate: "2024-01-01"
                   endDate: "2024-12-31"
                   status: "active"
                   parties: ["Company A", "Company B"]
                   amount: 50000
-                - id: 2
+                - id: e27a21b95804e50a7100
                   title: "Supply Agreement"
                   startDate: "2024-02-01"
                   endDate: "2024-12-31"
@@ -86,7 +86,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Contract'
               example:
-                id: 1
+                id: e27a21b95804e50a7099
                 title: "Service Agreement"
                 startDate: "2024-01-01"
                 endDate: "2024-12-31"
