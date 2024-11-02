@@ -1,0 +1,4 @@
+# ignoresthese files and folders
+*.sh
+.vscode
+.vscode/*
