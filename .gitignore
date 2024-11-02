@@ -1,5 +1,0 @@
-# ignoresthese files and folders
-.gitignore
-*.sh
-.vscode
-.vscode/*
