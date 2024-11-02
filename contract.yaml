@@ -1,57 +1,170 @@
-openapi: 3.0.0
-info:
-  title: Contract API
-  description: API for managing contracts.
-  version: 1.0.0
-servers:
-  - url: https://api.example.com/contract
-paths:
-  /contracts:
-    post:
-      summary: Create a new contract
-      requestBody:
-        required: true
-        content:
+#%RAML 1.0
+title: Contract API
+version: v1
+baseUri: https://api.example.com/v1
+mediaType: application/json
+
+types:
+  Contract:
+    type: object
+    properties:
+      id: integer
+      title: string
+      startDate: date
+      endDate: date
+      status: string
+      parties:
+        type: array
+        items: string
+      amount: number
+    example:
+      id: 1
+      title: "Service Agreement"
+      startDate: "2024-01-01"
+      endDate: "2024-12-31"
+      status: "active"
+      parties: ["Company A", "Company B"]
+      amount: 50000
+
+  ErrorResponse:
+    type: object
+    properties:
+      error: string
+      message: string
+    example:
+      error: "Not Found"
+      message: "Contract not found."
+
+/contracts:
+  get:
+    description: Retrieve a list of all contracts
+    responses:
+      200:
+        body:
           application/json:
-            schema:
-              type: object
-              properties:
-                customerId:
-                  type: string
-                terms:
-                  type: string
-              required:
-                - customerId
-                - terms
-      responses:
-        '201':
-          description: Contract created
-        '400':
-          description: Invalid input
-  /contracts/{contractId}:
+            type: Contract[]
+            example: [
+              {
+                "id": 1,
+                "title": "Service Agreement",
+                "startDate": "2024-01-01",
+                "endDate": "2024-12-31",
+                "status": "active",
+                "parties": ["Company A", "Company B"],
+                "amount": 50000
+              },
+              {
+                "id": 2,
+                "title": "Supply Agreement",
+                "startDate": "2024-02-01",
+                "endDate": "2024-12-31",
+                "status": "terminated",
+                "parties": ["Supplier A", "Retailer B"],
+                "amount": 100000
+              }
+            ]
+
+  post:
+    description: Create a new contract
+    body:
+      application/json:
+        type: Contract
+        example:
+          title: "New Service Contract"
+          startDate: "2024-06-01"
+          endDate: "2025-06-01"
+          status: "active"
+          parties: ["Company X", "Company Y"]
+          amount: 75000
+    responses:
+      201:
+        description: Contract created successfully
+        body:
+          application/json:
+            type: Contract
+            example:
+              id: 3
+              title: "New Service Contract"
+              startDate: "2024-06-01"
+              endDate: "2025-06-01"
+              status: "active"
+              parties: ["Company X", "Company Y"]
+              amount: 75000
+
+  /{contractId}:
+    uriParameters:
+      contractId:
+        type: integer
+        description: Unique identifier of the contract
     get:
-      summary: Get contract details
-      parameters:
-        - name: contractId
-          in: path
-          required: true
-          schema:
-            type: string
+      description: Retrieve a specific contract by ID
       responses:
-        '200':
-          description: Contract details
-        '404':
+        200:
+          body:
+            application/json:
+              type: Contract
+              example:
+                id: 1
+                title: "Service Agreement"
+                startDate: "2024-01-01"
+                endDate: "2024-12-31"
+                status: "active"
+                parties: ["Company A", "Company B"]
+                amount: 50000
+        404:
           description: Contract not found
+          body:
+            application/json:
+              type: ErrorResponse
+              example:
+                error: "Not Found"
+                message: "Contract with ID 1 not found."
+
+    put:
+      description: Update an existing contract
+      body:
+        application/json:
+          type: Contract
+          example:
+            title: "Updated Service Contract"
+            startDate: "2024-06-01"
+            endDate: "2025-06-01"
+            status: "active"
+            parties: ["Company X", "Company Y"]
+            amount: 80000
+      responses:
+        200:
+          description: Contract updated successfully
+          body:
+            application/json:
+              type: Contract
+              example:
+                id: 1
+                title: "Updated Service Contract"
+                startDate: "2024-06-01"
+                endDate: "2025-06-01"
+                status: "active"
+                parties: ["Company X", "Company Y"]
+                amount: 80000
+        404:
+          description: Contract not found
+          body:
+            application/json:
+              type: ErrorResponse
+              example:
+                error: "Not Found"
+                message: "Contract with ID 1 not found."
+
     delete:
-      summary: Terminate a contract
-      parameters:
-        - name: contractId
-          in: path
-          required: true
-          schema:
-            type: string
+      description: Delete a specific contract by ID
       responses:
-        '204':
-          description: Contract terminated
-        '404':
+        204:
+          description: Contract deleted successfully
+        404:
           description: Contract not found
+          body:
+            application/json:
+              type: ErrorResponse
+              example:
+                error: "Not Found"
+                message: "Contract with ID 1 not found."
